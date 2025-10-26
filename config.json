@@ -1,0 +1,7 @@
+{
+    "BTN_0": ["KEY_LEFTCTRL", "KEY_C"],
+    "BTN_1": ["KEY_LEFTCTRL", "KEY_V"],
+    "BTN_2": ["KEY_LEFTCTRL", "KEY_X"],
+    "BTN_3": ["KEY_LEFTCTRL", "KEY_Z"],
+    "BTN_4": ["KEY_LEFTCTRL", "KEY_Y"]
+}
