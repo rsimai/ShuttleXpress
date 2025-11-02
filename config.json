@@ -1,7 +1,29 @@
 {
-    "BTN_0": ["KEY_LEFTCTRL", "KEY_C"],
-    "BTN_1": ["KEY_LEFTCTRL", "KEY_V"],
-    "BTN_2": ["KEY_LEFTCTRL", "KEY_X"],
-    "BTN_3": ["KEY_LEFTCTRL", "KEY_Z"],
-    "BTN_4": ["KEY_LEFTCTRL", "KEY_Y"]
+  "buttons": {
+    "260": "ctrl+c",
+    "261": "ctrl+v",
+    "262": "super+t",
+    "263": "alt+f4",
+    "264": " "
+  },
+  "jog": {
+    "1": "up",
+    "-1": "down"
+  },
+  "ring": {
+    "-1": "down1",
+    "-2": "down2",
+    "-3": "down3",
+    "-4": "down4",
+    "-5": "down5",
+    "-6": "down6",
+    "-7": "down7",
+    "1": "up1", 
+    "2": "up2",
+    "3": "up3",
+    "4": "up4",
+    "5": "up5",
+    "6": "up6",
+    "7": "up7"
+  }
 }
