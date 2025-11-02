@@ -10,8 +10,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/bendahl/uinput"
-	"github.com/gvalkov/golang-evdev"
+	"github.com/bendahl/uinput" //Copyright (c) 2014 Benjamin Dahlmanns, MIT License
+	"github.com/gvalkov/golang-evdev" //Copyright (c) 2016 Georgi Valkov
 )
 
 const (
