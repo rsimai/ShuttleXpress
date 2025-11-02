@@ -17,17 +17,17 @@ You need to have Go installed on your system. You can find installation instruct
 
 ### 2. Build the application
 
-Clone the repository and build the application:
+Feel free to only use the `shuttlex` binary, it should have no dependencies. To build yourself, clone the repository and build the application:
 
 ```bash
 git clone https://github.com/rsimai/ShuttleXpress.git
 cd ShuttleXpress
-go build
+go build -o shuttlex
 ```
 
 ### 3. udev rules
 
-To allow the application to access the ShuttleXpress device and create a virtual keyboard, you need to set up some `udev` rules.
+To not run as root but allow the application to access the ShuttleXpress device and create a virtual keyboard, you need to set up some `udev` rules.
 
 1.  Copy the provided `udev` rules to `/etc/udev/rules.d/`:
 
@@ -41,7 +41,7 @@ To allow the application to access the ShuttleXpress device and create a virtual
     sudo udevadm control --reload-rules && sudo udevadm trigger
     ```
 
-3.  Create a `shuttle` group and add your user to it:
+3.  Create and add your user to the `shuttle` group:
 
     ```bash
     sudo groupadd shuttle
@@ -57,47 +57,49 @@ To allow the application to access the ShuttleXpress device and create a virtual
 2.  Run the application:
 
     ```bash
-    ./ShuttleXpress
+    ./shuttlex
     ```
 
-The application will read the `config.json` file and start listening for events from the ShuttleXpress.
+The application will read the `shuttlex.json` file and start listening for events from the ShuttleXpress. See `shuttlex --help` for more information.
+
 
 ## Configuration
 
-The `config.json` file allows you to customize the actions for each button, the jog wheel, and the shuttle ring.
+The `shuttlex.json` file allows you to customize the actions for each button, the jog wheel, and the shuttle ring. They are sent as keyboard events. Note the rate is miliseconds, +1/-1 doesn't repeat.
 
-Here is an example `config.json`:
+Here is an example `shuttlex.json`:
 
 ```json
 {
   "buttons": {
-    "256": "ctrl+c",
-    "257": "ctrl+v",
-    "258": "ctrl+t",
-    "259": "ctrl+shift+t",
-    "260": "super+f4"
+    "260": "ctrl+c",
+    "261": "ctrl+v",
+    "262": "super+t",
+    "263": "alt+f4",
+    "264": " "
   },
   "jog": {
     "1": "up",
     "-1": "down"
   },
   "ring": {
-    "1": "shift+up",
-    "2": "shift+up",
-    "3": "shift+up",
-    "4": "shift+up",
-    "5": "shift+up",
-    "6": "shift+up",
-    "7": "shift+up",
-    "-1": "shift+down",
-    "-2": "shift+down",
-    "-3": "shift+down",
-    "-4": "shift+down",
-    "-5": "shift+down",
-    "-6": "shift+down",
-    "-7": "shift+down"
+    "1": { "action": "shift+up", "rate": 0 },
+    "2": { "action": "shift+up", "rate": 500 },
+    "3": { "action": "shift+up", "rate": 250 },
+    "4": { "action": "shift+up", "rate": 130 },
+    "5": { "action": "shift+up", "rate": 70 },
+    "6": { "action": "shift+up", "rate": 40 },
+    "7": { "action": "shift+up", "rate": 20 },
+    "-1": { "action": "shift+down", "rate": 0 },
+    "-2": { "action": "shift+down", "rate": 500 },
+    "-3": { "action": "shift+down", "rate": 250 },
+    "-4": { "action": "shift+down", "rate": 130 },
+    "-5": { "action": "shift+down", "rate": 70 },
+    "-6": { "action": "shift+down", "rate": 40 },
+    "-7": { "action": "shift+down", "rate": 20 }
   }
 }
+
 ```
 
 ### Finding Button Codes

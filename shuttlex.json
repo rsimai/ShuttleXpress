@@ -1,0 +1,29 @@
+{
+  "buttons": {
+    "260": "ctrl+c",
+    "261": "ctrl+v",
+    "262": "super+t",
+    "263": "alt+f4",
+    "264": " "
+  },
+  "jog": {
+    "1": "up",
+    "-1": "down"
+  },
+  "ring": {
+    "1": { "action": "shift+up", "rate": 0 },
+    "2": { "action": "shift+up", "rate": 500 },
+    "3": { "action": "shift+up", "rate": 250 },
+    "4": { "action": "shift+up", "rate": 130 },
+    "5": { "action": "shift+up", "rate": 70 },
+    "6": { "action": "shift+up", "rate": 40 },
+    "7": { "action": "shift+up", "rate": 20 },
+    "-1": { "action": "shift+down", "rate": 0 },
+    "-2": { "action": "shift+down", "rate": 500 },
+    "-3": { "action": "shift+down", "rate": 250 },
+    "-4": { "action": "shift+down", "rate": 130 },
+    "-5": { "action": "shift+down", "rate": 70 },
+    "-6": { "action": "shift+down", "rate": 40 },
+    "-7": { "action": "shift+down", "rate": 20 }
+  }
+}

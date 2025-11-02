@@ -2,11 +2,13 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"log"
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/bendahl/uinput"
 	"github.com/gvalkov/golang-evdev"
@@ -17,11 +19,18 @@ const (
 	productID = 0x0020
 )
 
-type Config struct {
-	Buttons map[string]string `json:"buttons"`
-	Jog     map[string]string `json:"jog"`
-	Ring    map[string]string `json:"ring"`
+type RingAction struct {
+	Action string `json:"action"`
+	Rate   int    `json:"rate"`
 }
+
+type Config struct {
+	Buttons map[string]string      `json:"buttons"`
+	Jog     map[string]string      `json:"jog"`
+	Ring    map[string]RingAction `json:"ring"`
+}
+
+var ringCancelChan chan struct{}
 
 var stringToKeyCode = map[string]int{
 	"ctrl":  uinput.KeyLeftctrl,
@@ -80,10 +89,21 @@ func pressKeys(keyboard uinput.Keyboard, action string) error {
 }
 
 func main() {
+	// Command line flags
+	configPath := flag.String("config", "shuttlex.json", "Path to the configuration file.")
+	help := flag.Bool("help", false, "Show help message.")
+	flag.Parse()
+
+	if *help {
+		fmt.Println("ShuttleXpress Driver")
+		flag.PrintDefaults()
+		os.Exit(0)
+	}
+
 	// Load configuration
-	config, err := loadConfig("config.json")
+	config, err := loadConfig(*configPath)
 	if err != nil {
-		log.Fatalf("Error loading config: %v", err)
+		log.Fatalf("Error loading config file '%s': %v", *configPath, err)
 	}
 
 	// Find the ShuttleXpress device
@@ -217,15 +237,43 @@ func handleEvent(event *evdev.InputEvent, config *Config, lastJog *int32, keyboa
 				}
 			}
 			*lastJog = currentJog
-		case evdev.REL_WHEEL: // Ring
-			value := fmt.Sprintf("%d", event.Value)
-			if action, ok := config.Ring[value]; ok {
-				log.Printf("Ring event, action: %s. (Note: Ring actions are not yet mapped to key presses)", action)
-				// err := pressKeys(keyboard, action)
-				// if err != nil {
-				// 	log.Printf("Error simulating key press for action '%s': %v", action, err)
-				// }
-			}
+				case evdev.REL_WHEEL: // Ring
+					// Stop the previous ring action
+					if ringCancelChan != nil {
+						close(ringCancelChan)
+						ringCancelChan = nil
+					}
+		
+					value := fmt.Sprintf("%d", event.Value)
+					if ringConfig, ok := config.Ring[value]; ok && event.Value != 0 {
+						// Positions 1 and -1 trigger a single press and stop any repeating action.
+						if event.Value == 1 || event.Value == -1 {
+							log.Printf("Ring event: value %s, action: %s (single press)", value, ringConfig.Action)
+							err := pressKeys(keyboard, ringConfig.Action)
+							if err != nil {
+								log.Printf("Error simulating key press for ring action '%s': %v", ringConfig.Action, err)
+							}
+						} else { // Other positions trigger a repeating action.
+							log.Printf("Ring event: value %s, action: %s, rate: %dms", value, ringConfig.Action, ringConfig.Rate)
+							ringCancelChan = make(chan struct{})
+							go func(action string, rate int, cancel chan struct{}) {
+								ticker := time.NewTicker(time.Duration(rate) * time.Millisecond)
+								defer ticker.Stop()
+								for {
+									select {
+									case <-ticker.C:
+										err := pressKeys(keyboard, action)
+										if err != nil {
+											log.Printf("Error simulating key press for ring action '%s': %v", action, err)
+										}
+									case <-cancel:
+										return
+									}
+								}
+							}(ringConfig.Action, ringConfig.Rate, ringCancelChan)
+						}
+					}
+		
 		}
 	}
 }
